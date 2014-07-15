@@ -73,9 +73,7 @@ public final class TwistedPunishments extends JavaPlugin {
 
     private <T extends Punishment> void registerPunishment(Class<T> punishment, PunishmentFactory<T> factory) throws PunishException {
         BaseStorage<T> storageFor = connection.getStorageFor(punishment, factory);
-        PunishmentSystem<T> tPunishmentSystem;
-        tPunishmentSystem = new PunishmentSystem<>(punishment, factory.getNewManager(storageFor), factory, storageFor);
-        punishments.add(tPunishmentSystem);
+        punishments.add(new PunishmentSystem<>(punishment, factory.getNewManager(storageFor), factory, storageFor));
     }
 
     public static <T extends Punishment> PunishmentManager<T> getManager(Class<T> punishmentType) {

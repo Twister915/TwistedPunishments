@@ -5,20 +5,17 @@ import lombok.Value;
 import me.twister915.punishments.model.PunishException;
 import me.twister915.punishments.model.Punishment;
 import me.twister915.punishments.model.PunishmentFactory;
+import me.twister915.punishments.model.PunishmentManager;
 import me.twister915.punishments.model.factory.*;
 import me.twister915.punishments.model.manager.BaseManager;
 import me.twister915.punishments.model.manager.BaseStorage;
 import me.twister915.punishments.model.manager.impl.*;
 import me.twister915.punishments.model.manager.storage.DBConnection;
 import me.twister915.punishments.model.manager.storage.mysql.MySQLConnection;
-import me.twister915.punishments.model.manager.storage.mysql.MySQLStorage;
 import me.twister915.punishments.model.type.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,33 +29,22 @@ public final class TwistedPunishments extends JavaPlugin {
         instance = this;
         try {
             connection = new MySQLConnection("", "");
-            registerPunishment(Kick.class, new KickFactory(), KickManager.class);
-            registerPunishment(Warning.class, new WarningFactory(), WarningManager.class);
-            registerPunishment(TemporaryMute.class, new TemporaryMuteFactory(), TemporaryMuteManager.class);
-            registerPunishment(TemporaryBan.class, new TemporaryBanFactory(), TemporaryBanManager.class);
-            registerPunishment(Mute.class, new MuteFactory(), MuteManager.class);
-            registerPunishment(Ban.class, new BanFactory(), BanManager.class);
+            registerPunishment(Kick.class, new KickFactory());
+            registerPunishment(Warning.class, new WarningFactory());
+            registerPunishment(TemporaryMute.class, new TemporaryMuteFactory());
+            registerPunishment(TemporaryBan.class, new TemporaryBanFactory());
+            registerPunishment(Mute.class, new MuteFactory());
+            registerPunishment(Ban.class, new BanFactory());
         } catch (Exception e) {
             e.printStackTrace();
             Bukkit.getPluginManager().disablePlugin(this);
         }
     }
 
-    private <T extends Punishment> void registerPunishment(Class<T> punishment, PunishmentFactory<T> factory, Class<? extends BaseManager<T>> managerClass) throws PunishException {
+    private <T extends Punishment> void registerPunishment(Class<T> punishment, PunishmentFactory<T> factory) throws PunishException {
         BaseStorage<T> storageFor = connection.getStorageFor(punishment, factory);
-        //I hate to use reflection for this :(
-        Constructor<? extends BaseManager<T>> constructor;
-        try {
-            constructor = managerClass.getConstructor(PunishmentFactory.class, BaseStorage.class);
-        } catch (NoSuchMethodException e) {
-            throw new PunishException("Could not register " + getName(punishment) + " invalid constructor in manager!");
-        }
         PunishmentSystem<T> tPunishmentSystem;
-        try {
-            tPunishmentSystem = new PunishmentSystem<>(punishment, constructor.newInstance(factory, storageFor), factory, storageFor);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new PunishException("Could not register " + getName(punishment) + " invalid constructor in manager!");
-        }
+        tPunishmentSystem = new PunishmentSystem<>(punishment, factory.getNewManager(storageFor), factory, storageFor);
         punishments.add(tPunishmentSystem);
     }
 
@@ -69,7 +55,7 @@ public final class TwistedPunishments extends JavaPlugin {
     @Value
     private static class PunishmentSystem<T extends Punishment> {
         private Class<T> punishmentType;
-        private BaseManager<T> manager;
+        private PunishmentManager<T> manager;
         private PunishmentFactory<T> factory;
         private BaseStorage<T> storage;
     }

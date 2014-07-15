@@ -1,11 +1,12 @@
-package me.twister915.punishments.model.manager.storage.mysql;
+package me.twister915.punishments.model.storage.mysql;
 
 import com.jolbox.bonecp.BoneCP;
 import com.jolbox.bonecp.BoneCPConfig;
 import lombok.Data;
+import me.twister915.punishments.model.PunishException;
 import me.twister915.punishments.model.Punishment;
 import me.twister915.punishments.model.PunishmentFactory;
-import me.twister915.punishments.model.manager.storage.DBConnection;
+import me.twister915.punishments.model.storage.DBConnection;
 
 import java.sql.SQLException;
 
@@ -22,7 +23,12 @@ public final class MySQLConnection implements DBConnection {
         connectionPool = new BoneCP(new BoneCPConfig());
     }
 
-    public <T extends Punishment> MySQLStorage<T> getStorageFor(Class<T> type, PunishmentFactory<T> factory) throws SQLException {
-        return new MySQLStorage<>(type, factory, this);
+    public <T extends Punishment> MySQLStorage<T> getStorageFor(Class<T> type, PunishmentFactory<T> factory) throws PunishException {
+        try {
+            return new MySQLStorage<>(type, factory, this);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new PunishException(e.getMessage());
+        }
     }
 }

@@ -1,4 +1,4 @@
-package me.twister915.punishments.model.manager.storage;
+package me.twister915.punishments.model.storage;
 
 public enum DBKey {
     ID("id"),

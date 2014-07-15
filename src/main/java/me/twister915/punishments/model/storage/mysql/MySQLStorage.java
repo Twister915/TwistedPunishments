@@ -1,4 +1,4 @@
-package me.twister915.punishments.model.manager.storage.mysql;
+package me.twister915.punishments.model.storage.mysql;
 
 import com.google.common.base.Joiner;
 import lombok.Data;
@@ -7,7 +7,7 @@ import me.twister915.punishments.model.PunishException;
 import me.twister915.punishments.model.Punishment;
 import me.twister915.punishments.model.PunishmentFactory;
 import me.twister915.punishments.model.manager.BaseStorage;
-import me.twister915.punishments.model.manager.storage.DBKey;
+import me.twister915.punishments.model.storage.DBKey;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -67,39 +67,53 @@ public final class MySQLStorage<T extends Punishment> implements BaseStorage<T> 
         DBKey[] dbKeys = {DBKey.PUNISH_TARGET, DBKey.DATE_PUNISHED, DBKey.REASON, DBKey.ACTIVE, DBKey.LENGTH, DBKey.PUNISHER_ID};
         String[] questionMarks = new String[dbKeys.length];
         Arrays.fill(questionMarks, "?");
-        if (punishment.getDBId() == null) {
-            Connection connection1 = null;
-            try {
-                connection1 = connection.connectionPool.getConnection();
-                PreparedStatement preparedStatement = connection1.prepareStatement("INSERT INTO "
-                        + tableName
-                        + "()"
-                        + Joiner.on(',').join(dbKeys)
-                        + " VALUES ("
-                        + Joiner.on(',').join(questionMarks));
-                preparedStatement.setString(1, punishment.getPunished().getUniqueId().toString());
-                preparedStatement.setDate(2, new Date(punishment.getDatePunished().getTime()));
-                preparedStatement.setString(3, punishment.getReason());
-                preparedStatement.setBoolean(4, punishment.isActive());
-                preparedStatement.setInt(5, punishment.getLengthInSeconds());
-                preparedStatement.setString(6, punishment.getPunisherIdentifier());
-                preparedStatement.executeUpdate();
-                ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-                while (generatedKeys.next()) {
-                    punishment.setDBId(String.valueOf(generatedKeys.getInt(DBKey.ID.toString())));
-                }
-            } catch (SQLException e) {
-                throw new PunishException(e.getMessage());
-            } finally {
-                if (connection1 != null) try {
-                    connection1.close();
-                } catch (SQLException e) {
-                    throw new PunishException(e.getMessage());
-                }
+        Connection connection1 = null;
+        try {
+            connection1 = connection.connectionPool.getConnection();
+            if (punishment.getDBId() == null) {
+                    PreparedStatement preparedStatement = connection1.prepareStatement("INSERT INTO "
+                            + tableName
+                            + "()"
+                            + Joiner.on(',').join(dbKeys)
+                            + " VALUES ("
+                            + Joiner.on(',').join(questionMarks));
+                    preparedStatement.setString(1, punishment.getPunished().getUniqueId().toString());
+                    preparedStatement.setDate(2, new Date(punishment.getDatePunished().getTime()));
+                    preparedStatement.setString(3, punishment.getReason());
+                    preparedStatement.setBoolean(4, punishment.isActive());
+                    preparedStatement.setInt(5, punishment.getLengthInSeconds());
+                    preparedStatement.setString(6, punishment.getPunisherIdentifier());
+                    preparedStatement.executeUpdate();
+                    ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                    while (generatedKeys.next()) {
+                        punishment.setDBId(String.valueOf(generatedKeys.getInt(DBKey.ID.toString())));
+                    }
             }
-        }
-        else {
-            //Update the punishment
+            else {
+                String[] equals = new String[dbKeys.length];
+                for (int x = 0; x < dbKeys.length; x++) {
+                    equals[x] = dbKeys[x].toString() + "=?";
+                }
+                PreparedStatement preparedStatement = connection1.prepareStatement("UPDATE "
+                        + tableName
+                        + " SET "
+                        + Joiner.on(", ").join(equals)
+                        + " WHERE "
+                        + DBKey.ID
+                        + " = "
+                        + punishment.getDBId());
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new PunishException(e.getMessage());
+        } finally {
+            if (connection1 != null) try {
+                connection1.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                throw new PunishException(e.getMessage());
+            }
         }
     }
 
@@ -132,6 +146,7 @@ public final class MySQLStorage<T extends Punishment> implements BaseStorage<T> 
             }
             return results;
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new PunishException(e.getMessage());
         }
     }

@@ -7,11 +7,9 @@ import me.twister915.punishments.model.Punishment;
 import me.twister915.punishments.model.PunishmentFactory;
 import me.twister915.punishments.model.PunishmentManager;
 import me.twister915.punishments.model.factory.*;
-import me.twister915.punishments.model.manager.BaseManager;
 import me.twister915.punishments.model.manager.BaseStorage;
-import me.twister915.punishments.model.manager.impl.*;
-import me.twister915.punishments.model.manager.storage.DBConnection;
-import me.twister915.punishments.model.manager.storage.mysql.MySQLConnection;
+import me.twister915.punishments.model.storage.DBConnection;
+import me.twister915.punishments.model.storage.mysql.MySQLConnection;
 import me.twister915.punishments.model.type.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -21,6 +19,7 @@ import java.util.Set;
 
 public final class TwistedPunishments extends JavaPlugin {
     @Getter private static TwistedPunishments instance;
+
     private Set<PunishmentSystem<?>> punishments = new HashSet<>();
     private DBConnection connection;
 
@@ -46,6 +45,14 @@ public final class TwistedPunishments extends JavaPlugin {
         PunishmentSystem<T> tPunishmentSystem;
         tPunishmentSystem = new PunishmentSystem<>(punishment, factory.getNewManager(storageFor), factory, storageFor);
         punishments.add(tPunishmentSystem);
+    }
+
+    public static <T extends Punishment> PunishmentManager<T> getManager(Class<T> punishmentType) {
+        for (PunishmentSystem<?> punishment : instance.punishments) {
+            if (punishment.getClass().equals(punishmentType)) //noinspection unchecked
+                return (PunishmentManager<T>) punishment.getManager();
+        }
+        return null;
     }
 
     public static String getName(Class<? extends Punishment> punishmentClass) {

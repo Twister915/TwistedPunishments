@@ -15,4 +15,5 @@ abstract class BasePunishment implements Punishment {
     protected final String punisherIdentifier;
     protected final OfflinePlayer punished;
     @NonNull protected Integer lengthInSeconds = 0;
+    protected String dBId;
 }

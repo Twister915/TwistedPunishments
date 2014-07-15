@@ -8,10 +8,10 @@ import org.bukkit.entity.Player;
 import java.net.InetAddress;
 
 public interface PunishmentManager<T extends Punishment> {
-    void punish(OfflinePlayer player, String reason, CommandSender punisher);
-    void punish(OfflinePlayer player, String reason, CommandSender punisher, Integer lengthInSeconds);
+    void punish(OfflinePlayer player, String reason, CommandSender punisher) throws PunishException;
+    void punish(OfflinePlayer player, String reason, CommandSender punisher, Integer lengthInSeconds) throws PunishException;
     void unPunish(OfflinePlayer player) throws PunishException;
-    T getActivePunishmentFor(OfflinePlayer player);
-    ImmutableSet<T> getAllPunishmentsFor(OfflinePlayer player);
+    T getActivePunishmentFor(OfflinePlayer player) throws PunishException;
+    ImmutableSet<T> getAllPunishmentsFor(OfflinePlayer player) throws PunishException;
     void onPlayerConnect(Player player, InetAddress address) throws ConnectException;
 }

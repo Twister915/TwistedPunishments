@@ -12,4 +12,6 @@ public interface Punishment {
     String getPunisherIdentifier();
     OfflinePlayer getPunished();
     Integer getLengthInSeconds();
+    String getDBId();
+    void setDBId(String id);
 }

@@ -2,6 +2,7 @@ package me.twister915.punishments.model.manager.impl;
 
 import me.twister915.punishments.TwistedPunishments;
 import me.twister915.punishments.model.Punishment;
+import me.twister915.punishments.model.PunishmentFactory;
 import me.twister915.punishments.model.manager.BaseManager;
 import me.twister915.punishments.model.manager.BaseStorage;
 import org.bukkit.Bukkit;
@@ -22,8 +23,8 @@ public abstract class BaseMuteManager<T extends Punishment> extends BaseManager<
 
     protected abstract void handleChatEvent(AsyncPlayerChatEvent event);
 
-    public BaseMuteManager(BaseStorage<T> storage, Class<T> type) {
-        super(storage, type);
+    public BaseMuteManager(PunishmentFactory<T> factory, BaseStorage<T> storage, Class<T> type) {
+        super(factory, storage, type);
         Bukkit.getPluginManager().registerEvents(this, TwistedPunishments.getInstance());
     }
 

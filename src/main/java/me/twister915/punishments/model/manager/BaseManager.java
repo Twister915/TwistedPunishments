@@ -2,10 +2,8 @@ package me.twister915.punishments.model.manager;
 
 import com.google.common.collect.ImmutableSet;
 import lombok.Data;
-import me.twister915.punishments.model.ConnectException;
-import me.twister915.punishments.model.PunishException;
-import me.twister915.punishments.model.Punishment;
-import me.twister915.punishments.model.PunishmentManager;
+import me.twister915.punishments.model.*;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -16,10 +14,10 @@ import java.util.Set;
 
 @Data
 public abstract class BaseManager<T extends Punishment> implements PunishmentManager<T> {
+    protected final PunishmentFactory<T> factory;
     protected final BaseStorage<T> storage;
     protected final Class<T> type;
 
-    protected abstract T createNew(OfflinePlayer player, String reason, String punisherId, Date date, boolean active, Integer lengthInSeconds);
     protected void onPunish(T punishment, OfflinePlayer punished) {}
     protected void onUnPunish(T punishment, OfflinePlayer punished) {}
     protected abstract boolean canConnect(T punishment, Player player, InetAddress address);
@@ -27,13 +25,13 @@ public abstract class BaseManager<T extends Punishment> implements PunishmentMan
     protected void onConnect(T punishment) {}
 
     @Override
-    public void punish(OfflinePlayer player, String reason, CommandSender punisher) {
+    public void punish(OfflinePlayer player, String reason, CommandSender punisher) throws PunishException {
         punish(player, reason, punisher, 0);
     }
 
     @Override
-    public void punish(OfflinePlayer player, String reason, CommandSender punisher, Integer lengthInSeconds) {
-        T punishment = createNew(player, reason, (punisher instanceof Player ? ((Player) punisher).getUniqueId().toString() : "CONSOLE"), new Date(), true, lengthInSeconds);
+    public void punish(OfflinePlayer player, String reason, CommandSender punisher, Integer lengthInSeconds) throws PunishException {
+        T punishment = factory.createNew(player, reason, (punisher instanceof Player ? ((Player) punisher).getUniqueId().toString() : "CONSOLE"), new Date(), true, lengthInSeconds);
         storage.store(punishment);
         onPunish(punishment, player);
     }
@@ -48,7 +46,7 @@ public abstract class BaseManager<T extends Punishment> implements PunishmentMan
     }
 
     @Override
-    public T getActivePunishmentFor(OfflinePlayer player) {
+    public T getActivePunishmentFor(OfflinePlayer player) throws PunishException {
         Set<T> forPlayer = getAllPunishmentsFor(player);
         for (T t : forPlayer) {
             if (t.isActive()) return t;
@@ -57,13 +55,22 @@ public abstract class BaseManager<T extends Punishment> implements PunishmentMan
     }
 
     @Override
-    public ImmutableSet<T> getAllPunishmentsFor(OfflinePlayer player) {
+    public ImmutableSet<T> getAllPunishmentsFor(OfflinePlayer player) throws PunishException {
         return ImmutableSet.copyOf(storage.getForPlayer(player));
     }
 
     @Override
     public void onPlayerConnect(Player player, InetAddress address) throws ConnectException {
-        T activePunishmentFor = getActivePunishmentFor(player);
+        T activePunishmentFor;
+        try {
+            activePunishmentFor = getActivePunishmentFor(player);
+        } catch (PunishException e) {
+            if (player.isOp()) {
+                player.sendMessage(ChatColor.RED + "Punishments are currently offline! " + e.getMessage());
+                return;
+            }
+            throw new ConnectException(ChatColor.RED + "Punishments are currently offline! Please check the DB Connection");
+        }
         if (activePunishmentFor == null) return;
         if (canConnect(activePunishmentFor, player, address)) {
             onConnect(activePunishmentFor);

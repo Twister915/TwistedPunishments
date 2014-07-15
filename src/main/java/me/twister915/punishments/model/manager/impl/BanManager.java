@@ -1,5 +1,6 @@
 package me.twister915.punishments.model.manager.impl;
 
+import me.twister915.punishments.model.PunishmentFactory;
 import me.twister915.punishments.model.manager.BaseManager;
 import me.twister915.punishments.model.manager.BaseStorage;
 import me.twister915.punishments.model.type.Ban;
@@ -10,13 +11,8 @@ import java.net.InetAddress;
 import java.util.Date;
 
 public final class BanManager extends BaseManager<Ban> {
-    public BanManager(BaseStorage<Ban> storage) {
-        super(storage, Ban.class);
-    }
-
-    @Override
-    protected Ban createNew(OfflinePlayer player, String reason, String punisherId, Date date, boolean active, Integer lengthInSeconds) {
-        return new Ban(active, reason, date, punisherId, player);
+    public BanManager(PunishmentFactory<Ban> factory, BaseStorage<Ban> storage) {
+        super(factory, storage, Ban.class);
     }
 
     @Override

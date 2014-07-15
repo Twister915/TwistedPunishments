@@ -17,6 +17,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 public final class TwistedPunishments extends JavaPlugin {
@@ -41,6 +42,8 @@ public final class TwistedPunishments extends JavaPlugin {
             registerPunishment(TemporaryBan.class, new TemporaryBanFactory());
             registerPunishment(Mute.class, new MuteFactory());
             registerPunishment(Ban.class, new BanFactory());
+
+            new PunishmentListener();
         } catch (Exception e) {
             e.printStackTrace();
             Bukkit.getPluginManager().disablePlugin(this);
@@ -66,6 +69,16 @@ public final class TwistedPunishments extends JavaPlugin {
                 return (PunishmentManager<T>) punishment.getManager();
         }
         return null;
+    }
+
+    public static PunishmentManager<?>[] getPunishmentManagers() {
+        PunishmentManager[] punishmentManagers = new PunishmentManager[instance.punishments.size()];
+        Iterator<PunishmentSystem<?>> iterator = instance.punishments.iterator();
+        for (int x = 0; x < instance.punishments.size(); x++) {
+            PunishmentSystem<?> next = iterator.next();
+            punishmentManagers[x] = next.getManager();
+        }
+        return punishmentManagers;
     }
 
     public static String getName(Class<? extends Punishment> punishmentClass) {

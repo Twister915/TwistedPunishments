@@ -74,9 +74,9 @@ public final class MySQLStorage<T extends Punishment> implements BaseStorage<T> 
                     PreparedStatement preparedStatement = connection1.prepareStatement("INSERT INTO "
                             + tableName
                             + "()"
-                            + Joiner.on(',').join(dbKeys)
+                            + Joiner.on(", ").join(dbKeys)
                             + " VALUES ("
-                            + Joiner.on(',').join(questionMarks));
+                            + Joiner.on(", ").join(questionMarks));
                     preparedStatement.setString(1, punishment.getPunished().getUniqueId().toString());
                     preparedStatement.setDate(2, new Date(punishment.getDatePunished().getTime()));
                     preparedStatement.setString(3, punishment.getReason());

@@ -9,7 +9,9 @@ import me.twister915.punishments.model.PunishmentManager;
 import me.twister915.punishments.model.factory.*;
 import me.twister915.punishments.model.manager.BaseStorage;
 import me.twister915.punishments.model.storage.DBConnection;
+import me.twister915.punishments.model.storage.mongodb.MongoLoader;
 import me.twister915.punishments.model.storage.mysql.MySQLConnection;
+import me.twister915.punishments.model.storage.mysql.MySQLLoader;
 import me.twister915.punishments.model.type.*;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -26,8 +28,13 @@ public final class TwistedPunishments extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        saveDefaultConfig();
         try {
-            connection = new MySQLConnection("", "");
+            String databaseType = getConfig().getString("databaseType");
+            if (databaseType.equalsIgnoreCase("mysql")) connection = new MySQLLoader().getNewConnection();
+            else if (databaseType.equalsIgnoreCase("mongo")) connection = new MongoLoader().getNewConnection();
+            else throw new PunishException("There is no database specified for Twisted Punishments!");
+
             registerPunishment(Kick.class, new KickFactory());
             registerPunishment(Warning.class, new WarningFactory());
             registerPunishment(TemporaryMute.class, new TemporaryMuteFactory());
@@ -38,6 +45,12 @@ public final class TwistedPunishments extends JavaPlugin {
             e.printStackTrace();
             Bukkit.getPluginManager().disablePlugin(this);
         }
+    }
+
+    @Override
+    public void onDisable() {
+        connection.onDisable();
+        punishments.clear();
     }
 
     private <T extends Punishment> void registerPunishment(Class<T> punishment, PunishmentFactory<T> factory) throws PunishException {

@@ -17,10 +17,14 @@ public final class MySQLConnection implements DBConnection {
 
     final BoneCP connectionPool;
 
-    public MySQLConnection(String url, String prefix) throws SQLException {
+    public MySQLConnection(String url, String username, String password, String prefix) throws SQLException {
         this.url = url;
         this.prefix = prefix;
-        connectionPool = new BoneCP(new BoneCPConfig());
+        BoneCPConfig config = new BoneCPConfig();
+        config.setJdbcUrl(url);
+        config.setUsername(username);
+        config.setPassword(password);
+        connectionPool = new BoneCP(config);
     }
 
     public <T extends Punishment> MySQLStorage<T> getStorageFor(Class<T> type, PunishmentFactory<T> factory) throws PunishException {
@@ -30,5 +34,10 @@ public final class MySQLConnection implements DBConnection {
             e.printStackTrace();
             throw new PunishException(e.getMessage());
         }
+    }
+
+    @Override
+    public void onDisable() {
+
     }
 }

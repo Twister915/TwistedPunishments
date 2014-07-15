@@ -11,4 +11,9 @@ public class MongoConnection implements DBConnection {
     public <P extends Punishment> BaseStorage<P> getStorageFor(Class<P> punishmentType, PunishmentFactory<P> factory) throws PunishException {
         return null;
     }
+
+    @Override
+    public void onDisable() {
+
+    }
 }

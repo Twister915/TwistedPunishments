@@ -28,7 +28,7 @@ public final class MySQLStorage<T extends Punishment> implements BaseStorage<T> 
         this.type = type;
         this.connection = connection;
         this.factory = factory;
-        tableName = TwistedPunishments.getName(type).toLowerCase() + "s";
+        tableName = (connection.getPrefix() == null ? "" : connection.getPrefix()) + TwistedPunishments.getName(type).toLowerCase() + "s";
 
         //Create the table
         Connection connection1 = connection.connectionPool.getConnection();

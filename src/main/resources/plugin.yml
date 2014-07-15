@@ -1,0 +1,5 @@
+name: TwistedPunishments
+authors: [Twister915]
+main: me.twister915.punishments.TwistedPunishments
+version: 0.1
+description: An advanced and robust punishments plugin designed for large scale networks.

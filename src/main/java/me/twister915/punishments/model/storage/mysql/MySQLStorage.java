@@ -87,9 +87,9 @@ public final class MySQLStorage<T extends Punishment> implements BaseStorage<T> 
             if (punishment.getDBId() == null) {
                     PreparedStatement preparedStatement = connection1.prepareStatement("INSERT INTO "
                             + tableName
-                            + "()"
+                            + "("
                             + Joiner.on(", ").join(dbKeys)
-                            + " VALUES ("
+                            + ") VALUES ("
                             + Joiner.on(", ").join(questionMarks));
                     preparedStatement.setString(1, punishment.getPunished().getUniqueId().toString());
                     preparedStatement.setDate(2, new Date(punishment.getDatePunished().getTime()));

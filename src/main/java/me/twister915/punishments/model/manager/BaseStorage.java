@@ -24,5 +24,6 @@ import java.util.Set;
 
 public interface BaseStorage<T extends Punishment> {
     void store(T punishment) throws PunishException;
+    void purge(Set<T> punishments) throws PunishException;
     Set<T> getForPlayer(OfflinePlayer player) throws PunishException;
 }

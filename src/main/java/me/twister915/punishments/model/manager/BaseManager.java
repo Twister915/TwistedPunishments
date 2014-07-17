@@ -56,6 +56,7 @@ public abstract class BaseManager<T extends Punishment> implements PunishmentMan
     public void unPunish(OfflinePlayer player) throws PunishException {
         T activePunishmentFor = getActivePunishmentFor(player);
         if (activePunishmentFor == null) throw new PunishException("There is no punishment for this user!");
+        //noinspection deprecation
         activePunishmentFor.setActive(false);
         storage.store(activePunishmentFor);
         onUnPunish(activePunishmentFor, player);
@@ -73,6 +74,11 @@ public abstract class BaseManager<T extends Punishment> implements PunishmentMan
     @Override
     public ImmutableSet<T> getAllPunishmentsFor(OfflinePlayer player) throws PunishException {
         return ImmutableSet.copyOf(storage.getForPlayer(player));
+    }
+
+    @Override
+    public void purgePunishments(Set<T> punishments) throws PunishException {
+        storage.purge(punishments);
     }
 
     @Override

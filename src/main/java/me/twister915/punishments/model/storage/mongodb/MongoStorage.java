@@ -16,5 +16,26 @@
 
 package me.twister915.punishments.model.storage.mongodb;
 
-public class MongoStorage {
+import me.twister915.punishments.model.PunishException;
+import me.twister915.punishments.model.Punishment;
+import me.twister915.punishments.model.manager.BaseStorage;
+import org.bukkit.OfflinePlayer;
+
+import java.util.Set;
+
+public class MongoStorage<T extends Punishment> implements BaseStorage<T> {
+    @Override
+    public void store(T punishment) throws PunishException {
+
+    }
+
+    @Override
+    public void purge(Set<T> punishments) throws PunishException {
+
+    }
+
+    @Override
+    public Set<T> getForPlayer(OfflinePlayer player) throws PunishException {
+        return null;
+    }
 }

@@ -28,10 +28,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.sql.*;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.sql.Date;
+import java.util.*;
 
 @Data
 public final class MySQLStorage<T extends Punishment> implements BaseStorage<T> {
@@ -102,13 +100,14 @@ public final class MySQLStorage<T extends Punishment> implements BaseStorage<T> 
                     preparedStatement.executeUpdate();
                     ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
                     while (generatedKeys.next()) {
+                        //noinspection deprecation
                         punishment.setDBId(String.valueOf(generatedKeys.getInt(DBKey.ID.toString())));
                     }
             }
             else {
                 String[] equals = new String[dbKeys.length];
                 for (int x = 0; x < dbKeys.length; x++) {
-                    equals[x] = dbKeys[x].toString() + "=?";
+                    equals[x] = dbKeys[x].toString() + " = ?";
                 }
                 PreparedStatement preparedStatement = connection1.prepareStatement("UPDATE "
                         + tableName
@@ -130,6 +129,24 @@ public final class MySQLStorage<T extends Punishment> implements BaseStorage<T> 
                 e.printStackTrace();
                 throw new PunishException(e.getMessage());
             }
+        }
+    }
+
+    @Override
+    public void purge(Set<T> punishments) throws PunishException {
+        String[] ids = new String[punishments.size()];
+        Iterator<T> iterator = punishments.iterator();
+        for (int i = 0; i < punishments.size(); i++) {
+            String dbId = iterator.next().getDBId();
+            if (dbId == null) continue;
+            ids[i] = dbId;
+        }
+        try {
+            Statement statement = connection.connectionPool.getConnection().createStatement();
+            statement.executeUpdate("DELETE FROM " + tableName + " WHERE " + DBKey.ID + " in (" + Joiner.on(',').join(ids) + ")");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new PunishException(e.getMessage());
         }
     }
 
@@ -157,6 +174,7 @@ public final class MySQLStorage<T extends Punishment> implements BaseStorage<T> 
                         resultSet.getBoolean(DBKey.ACTIVE.toString()),
                         resultSet.getInt(DBKey.LENGTH.toString())
                 );
+                //noinspection deprecation
                 aNew.setDBId(String.valueOf(resultSet.getInt(DBKey.ID.toString())));
                 results.add(aNew);
             }

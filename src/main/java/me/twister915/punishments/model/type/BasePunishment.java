@@ -30,6 +30,6 @@ abstract class BasePunishment implements Punishment {
     protected final Date datePunished;
     protected final String punisherIdentifier;
     protected final OfflinePlayer punished;
-    @NonNull protected Integer lengthInSeconds = 0;
+    @NonNull protected Double lengthInSeconds = 0D;
     protected String dBId;
 }

@@ -16,21 +16,38 @@
 
 package me.twister915.punishments.command;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
-public class BaseTargetedCommand implements CommandExecutor, TabCompleter {
-    @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
-        return false;
+abstract class BaseTargetedCommand implements CommandExecutor, TabCompleter {
+    public OfflinePlayer getTargetedPlayer(String arg) {
+        Player player = Bukkit.getPlayer(arg);
+        if (player != null) return player;
+        try {
+            OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(arg));
+            if (offlinePlayer != null) return offlinePlayer;
+        } catch (IllegalArgumentException ignored) {}
+        for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
+            if (offlinePlayer.getName().equalsIgnoreCase(arg)) return offlinePlayer;
+        }
+        return null;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
-        return null;
+        ArrayList<String> strings1 = new ArrayList<>();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getName().toLowerCase().startsWith(strings[strings.length-1])) strings1.add(player.getName());
+        }
+        return strings1;
     }
 }

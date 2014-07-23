@@ -22,7 +22,7 @@ import org.bukkit.OfflinePlayer;
 import java.util.Date;
 
 public final class TemporaryBan extends BasePunishment implements TemporaryPunishment {
-    public TemporaryBan(boolean active, String reason, Date datePunished, String punisherIdentifier, OfflinePlayer punished, Integer lengthInSeconds) {
+    public TemporaryBan(boolean active, String reason, Date datePunished, String punisherIdentifier, OfflinePlayer punished, Double lengthInSeconds) {
         super(active, reason, datePunished, punisherIdentifier, punished);
         this.lengthInSeconds = lengthInSeconds;
     }

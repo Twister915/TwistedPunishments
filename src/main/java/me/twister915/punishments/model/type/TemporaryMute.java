@@ -22,7 +22,7 @@ import org.bukkit.OfflinePlayer;
 import java.util.Date;
 
 public final class TemporaryMute extends BasePunishment implements TemporaryPunishment {
-    public TemporaryMute(boolean active, String reason, Date datePunished, String punisherIdentifier, OfflinePlayer punished, Integer lengthInSeconds) {
+    public TemporaryMute(boolean active, String reason, Date datePunished, String punisherIdentifier, OfflinePlayer punished, Double lengthInSeconds) {
         super(active, reason, datePunished, punisherIdentifier, punished);
         this.lengthInSeconds = lengthInSeconds;
     }

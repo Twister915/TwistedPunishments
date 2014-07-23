@@ -41,15 +41,16 @@ public abstract class BaseManager<T extends Punishment> implements PunishmentMan
     protected void onConnect(T punishment) {}
 
     @Override
-    public void punish(OfflinePlayer player, String reason, CommandSender punisher) throws PunishException {
-        punish(player, reason, punisher, 0);
+    public T punish(OfflinePlayer player, String reason, CommandSender punisher) throws PunishException {
+        return punish(player, reason, punisher, 0D);
     }
 
     @Override
-    public void punish(OfflinePlayer player, String reason, CommandSender punisher, Integer lengthInSeconds) throws PunishException {
+    public T punish(OfflinePlayer player, String reason, CommandSender punisher, Double lengthInSeconds) throws PunishException {
         T punishment = factory.createNew(player, reason, (punisher instanceof Player ? ((Player) punisher).getUniqueId().toString() : "CONSOLE"), new Date(), true, lengthInSeconds);
         storage.store(punishment);
         onPunish(punishment, player);
+        return punishment;
     }
 
     @Override

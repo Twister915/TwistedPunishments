@@ -27,7 +27,7 @@ import java.util.Date;
 
 public final class MuteFactory implements PunishmentFactory<Mute> {
     @Override
-    public Mute createNew(OfflinePlayer player, String reason, String punisherId, Date date, boolean active, Integer lengthInSeconds) {
+    public Mute createNew(OfflinePlayer player, String reason, String punisherId, Date date, boolean active, Double lengthInSeconds) {
         return new Mute(active, reason, date, punisherId, player);
     }
 

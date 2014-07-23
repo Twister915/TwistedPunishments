@@ -95,7 +95,7 @@ public final class MySQLStorage<T extends Punishment> implements BaseStorage<T> 
                     preparedStatement.setDate(2, new Date(punishment.getDatePunished().getTime()));
                     preparedStatement.setString(3, punishment.getReason());
                     preparedStatement.setBoolean(4, punishment.isActive());
-                    preparedStatement.setInt(5, punishment.getLengthInSeconds());
+                    preparedStatement.setDouble(5, punishment.getLengthInSeconds());
                     preparedStatement.setString(6, punishment.getPunisherIdentifier());
                     preparedStatement.executeUpdate();
                     ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
@@ -172,7 +172,7 @@ public final class MySQLStorage<T extends Punishment> implements BaseStorage<T> 
                         resultSet.getString(DBKey.PUNISHER_ID.toString()),
                         resultSet.getDate(DBKey.DATE_PUNISHED.toString()),
                         resultSet.getBoolean(DBKey.ACTIVE.toString()),
-                        resultSet.getInt(DBKey.LENGTH.toString())
+                        resultSet.getDouble(DBKey.LENGTH.toString())
                 );
                 //noinspection deprecation
                 aNew.setDBId(String.valueOf(resultSet.getInt(DBKey.ID.toString())));

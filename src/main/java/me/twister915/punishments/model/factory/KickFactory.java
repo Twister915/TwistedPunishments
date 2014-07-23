@@ -27,7 +27,7 @@ import java.util.Date;
 
 public final class KickFactory implements PunishmentFactory<Kick> {
     @Override
-    public Kick createNew(OfflinePlayer player, String reason, String punisherId, Date date, boolean active, Integer lengthInSeconds) {
+    public Kick createNew(OfflinePlayer player, String reason, String punisherId, Date date, boolean active, Double lengthInSeconds) {
         return new Kick(reason, date, punisherId, player);
     }
 

@@ -27,7 +27,7 @@ import java.util.Date;
 
 public final class BanFactory implements PunishmentFactory<Ban> {
     @Override
-    public Ban createNew(OfflinePlayer player, String reason, String punisherId, Date date, boolean active, Integer lengthInSeconds) {
+    public Ban createNew(OfflinePlayer player, String reason, String punisherId, Date date, boolean active, Double lengthInSeconds) {
         return new Ban(active, reason, date, punisherId, player);
     }
 

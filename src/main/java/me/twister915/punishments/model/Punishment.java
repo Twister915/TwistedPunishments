@@ -64,7 +64,7 @@ public interface Punishment {
      * Get the amount of seconds this punishment is set to last for. In permanent punishments, this value is 0.
      * @return The number of seconds this punishment is set to last for in an {@link java.lang.Integer} object.
      */
-    Integer getLengthInSeconds();
+    Double getLengthInSeconds();
 
     /**
      * Gets the identifier specified by the storage. This is used to track the binding between a punishment object and a DB entry. This value will be {@code null} in the event that this has not been saved to a database.

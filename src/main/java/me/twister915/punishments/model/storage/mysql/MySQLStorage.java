@@ -69,7 +69,7 @@ public final class MySQLStorage<T extends Punishment> implements BaseStorage<T> 
                 + DBKey.ID
                 + ", "
                 + DBKey.PUNISH_TARGET
-                + "))");
+                + ")");
         }
         finally {
             connection1.close();
@@ -90,7 +90,8 @@ public final class MySQLStorage<T extends Punishment> implements BaseStorage<T> 
                             + "("
                             + Joiner.on(", ").join(dbKeys)
                             + ") VALUES ("
-                            + Joiner.on(", ").join(questionMarks));
+                            + Joiner.on(", ").join(questionMarks)
+                            + ")");
                     preparedStatement.setString(1, punishment.getPunished().getUniqueId().toString());
                     preparedStatement.setDate(2, new Date(punishment.getDatePunished().getTime()));
                     preparedStatement.setString(3, punishment.getReason());

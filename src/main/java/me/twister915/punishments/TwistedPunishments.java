@@ -18,10 +18,7 @@ package me.twister915.punishments;
 
 import lombok.Getter;
 import lombok.Value;
-import me.twister915.punishments.model.PunishException;
-import me.twister915.punishments.model.Punishment;
-import me.twister915.punishments.model.PunishmentFactory;
-import me.twister915.punishments.model.PunishmentManager;
+import me.twister915.punishments.model.*;
 import me.twister915.punishments.model.factory.*;
 import me.twister915.punishments.model.manager.BaseStorage;
 import me.twister915.punishments.model.storage.DBConnection;
@@ -95,7 +92,8 @@ public final class TwistedPunishments extends JavaPlugin {
     }
 
     public static String getName(Class<? extends Punishment> punishmentClass) {
-        return punishmentClass.getSimpleName();
+        return punishmentClass.isAnnotationPresent(HumanFriendlyName.class) ?
+                punishmentClass.getAnnotation(HumanFriendlyName.class).value() : punishmentClass.getSimpleName();
     }
 
     @Value

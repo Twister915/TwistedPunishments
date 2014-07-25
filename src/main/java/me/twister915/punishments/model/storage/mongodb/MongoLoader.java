@@ -16,12 +16,36 @@
 
 package me.twister915.punishments.model.storage.mongodb;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
+import me.twister915.punishments.TwistedPunishments;
 import me.twister915.punishments.model.PunishException;
 import me.twister915.punishments.model.storage.ConnectionLoader;
+import org.bukkit.configuration.ConfigurationSection;
+
+import java.net.UnknownHostException;
 
 public class MongoLoader implements ConnectionLoader<MongoConnection> {
     @Override
     public MongoConnection getNewConnection() throws PunishException {
-        return null;
+        ConfigurationSection mongodb = TwistedPunishments.getInstance().getConfig().getConfigurationSection("mongodb");
+        String host = mongodb.getString("host", "127.0.0.1");
+        int port = mongodb.getInt("port", 27017);
+        String username = mongodb.getString("username");
+        String password = mongodb.getString("psasword");
+        String database = mongodb.getString("database", "minecraft");
+        String prefix = mongodb.getString("prefix");
+        MongoClientURI uri;
+        if (username == null || password == null) {
+            uri = new MongoClientURI("mongodb://" + host + ":" + port + "/" + database);
+        } else {
+            uri = new MongoClientURI("mongodb://" + username + ":" + password + "@" + host + ":" + "/" + database);
+        }
+        try {
+            return new MongoConnection(prefix, new MongoClient(uri).getDB(database));
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            throw new PunishException(e.getMessage());
+        }
     }
 }

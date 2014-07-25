@@ -18,7 +18,6 @@ package me.twister915.punishments.model.storage.mysql;
 
 import com.google.common.base.Joiner;
 import lombok.Data;
-import me.twister915.punishments.TwistedPunishments;
 import me.twister915.punishments.model.PunishException;
 import me.twister915.punishments.model.Punishment;
 import me.twister915.punishments.model.PunishmentFactory;
@@ -42,7 +41,7 @@ public final class MySQLStorage<T extends Punishment> implements BaseStorage<T> 
         this.type = type;
         this.connection = connection;
         this.factory = factory;
-        tableName = (connection.getPrefix() == null ? "" : connection.getPrefix()) + TwistedPunishments.getName(type).toLowerCase() + "s";
+        tableName = (connection.getPrefix() == null ? "" : connection.getPrefix()) + type.getSimpleName().toLowerCase() + "s";
 
         //Create the table
         Connection connection1 = connection.connectionPool.getConnection();
@@ -87,7 +86,7 @@ public final class MySQLStorage<T extends Punishment> implements BaseStorage<T> 
             if (punishment.getDBId() == null) {
                     PreparedStatement preparedStatement = connection1.prepareStatement("INSERT INTO "
                             + tableName
-                            + "("
+                            + " ("
                             + Joiner.on(", ").join(dbKeys)
                             + ") VALUES ("
                             + Joiner.on(", ").join(questionMarks)

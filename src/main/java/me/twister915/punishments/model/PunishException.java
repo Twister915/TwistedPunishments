@@ -21,6 +21,6 @@ import lombok.Value;
 
 @EqualsAndHashCode(callSuper = true)
 @Value
-public class PunishException extends Exception {
+public final class PunishException extends Exception {
     private final String message;
 }
